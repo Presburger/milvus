@@ -1708,13 +1708,13 @@ func checkSegmentGpuMemSize(fieldGpuMemSizeList []uint64, OverloadedMemoryThresh
 		}
 		return err
 	}
-	var availableGpuMem []uint64
+	var usedGpuMem []uint64
 	var maxGpuMemSize []uint64
 	for _, gpuInfo := range gpuInfos {
-		availableGpuMem = append(availableGpuMem, gpuInfo.TotalMemory-gpuInfo.FreeMemory)
+		usedGpuMem = append(usedGpuMem, gpuInfo.TotalMemory-gpuInfo.FreeMemory)
 		maxGpuMemSize = append(maxGpuMemSize, uint64(float32(gpuInfo.TotalMemory)*OverloadedMemoryThresholdPercentage))
 	}
-	currentGpuMem := availableGpuMem
+	currentGpuMem := usedGpuMem
 	for _, fieldGpuMem := range fieldGpuMemSizeList {
 		var minId int = -1
 		var minGpuMem uint64 = math.MaxUint64
@@ -1726,9 +1726,9 @@ func checkSegmentGpuMemSize(fieldGpuMemSizeList []uint64, OverloadedMemoryThresh
 			}
 		}
 		if minId == -1 {
-			return fmt.Errorf("load segment failed, GPU OOM if loaded, GpuMemUsage(bytes) = %v, availableGpuMem(bytes) = %v, maxGPUMem(bytes) = %v",
+			return fmt.Errorf("load segment failed, GPU OOM if loaded, GpuMemUsage(bytes) = %v, usedGpuMem(bytes) = %v, maxGPUMem(bytes) = %v",
 				fieldGpuMem,
-				availableGpuMem,
+				usedGpuMem,
 				maxGpuMemSize)
 		}
 		currentGpuMem[minId] += minGpuMem
