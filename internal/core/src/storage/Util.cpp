@@ -37,7 +37,6 @@
 #include "storage/InsertData.h"
 #include "storage/LocalChunkManager.h"
 #include "storage/MemFileManagerImpl.h"
-#include "storage/MinioChunkManager.h"
 #ifdef USE_OPENDAL
 #include "storage/opendal/OpenDALChunkManager.h"
 #endif
@@ -709,6 +708,7 @@ CreateChunkManager(const StorageConfig& storage_config) {
             return std::make_shared<LocalChunkManager>(
                 storage_config.root_path);
         }
+#ifndef MILVUS_LITE
         case ChunkManagerType::Minio: {
             return std::make_shared<MinioChunkManager>(storage_config);
         }
@@ -755,6 +755,7 @@ CreateChunkManager(const StorageConfig& storage_config) {
                       "unsupported storage_config.storage_type {}",
                       fmt::underlying(storage_type));
         }
+#endif
     }
 }
 
